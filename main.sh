@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Universal GitHub Actions Workflow Tester
-# Automatically discovers and tests any workflow in .github/workflows
+# GAT - GitHub Actions Tester
+# Universal workflow testing tool
 
 set -e
 
-# gat - A cross-platform bash utility
+# Version (replaced during installation)
 GAT_VERSION="{{VERSION_TAG}}"
 
 # Colors for output
@@ -399,8 +399,8 @@ EOF
     echo ""
     print_info "Next steps:"
     echo "  1. Edit $scenarios_file"
-    echo "  2. Run: ./test-workflow.sh list-scenarios $basename"
-    echo "  3. Run: ./test-workflow.sh test $basename 1"
+    echo "  2. Run: gat list-scenarios $basename"
+    echo "  3. Run: gat test $basename 1"
 }
 
 # Function to list scenarios for a workflow
@@ -416,7 +416,7 @@ list_scenarios() {
     
     if [ ! -f "$scenarios_file" ]; then
         print_error "No scenarios found for workflow: $workflow_name"
-        print_info "Run: ./test-workflow.sh init <workflow> first"
+        print_info "Run: gat init <workflow> first"
         exit 1
     fi
     
@@ -534,8 +534,18 @@ run_with_act() {
     fi
     
     # Make paths relative to git root (portable way)
+    # Remove the git_root prefix and any leading slash
     workflow_rel_path="${workflow_abs#$git_root/}"
     event_rel_path="${event_abs#$git_root/}"
+    
+    # If paths didn't change (not under git root), use as-is
+    if [ "$workflow_rel_path" = "$workflow_abs" ]; then
+        workflow_rel_path="$workflow_file"
+    fi
+    
+    if [ "$event_rel_path" = "$event_abs" ]; then
+        event_rel_path="$event_file"
+    fi
     
     print_info "Git root: $git_root"
     print_info "Workflow (relative): $workflow_rel_path"
@@ -613,12 +623,15 @@ test_scenario() {
     
     if [ ! -f "$scenarios_file" ]; then
         print_error "No scenarios found for: $workflow_name"
-        print_info "Run: ./test-workflow.sh init <workflow> first"
+        print_info "Run: gat init <workflow> first"
         exit 1
     fi
     
+
     local scenario_index=$((scenario_num - 1))
-    local workflow_file=$(jq -r '.workflow' "$scenarios_file")
+    # local workflow_file=$(jq -r '.workflow' "$scenarios_file")
+    local workflow_file="$WORKFLOWS_DIR/$workflow_name.yml"
+
     local trigger=$(jq -r '.trigger' "$scenarios_file")
     
     # Generate event JSON
@@ -661,7 +674,7 @@ main() {
                 exit 0
                 ;;
             -v|--version)
-                echo "GAT Version: $GAT_VERSION"
+                echo "GAT version $GAT_VERSION"
                 exit 0
                 ;;
             *)
