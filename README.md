@@ -43,13 +43,13 @@ sudo mv main.sh /usr/local/bin/gat
 1. Install latest version:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/oobook/gat/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/oobook/gat/main/install.sh | sudo bash
 ```
 
 2. Install specific version:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/oobook/gat/main/install.sh | bash -s v1.0.0
+curl -sSL https://raw.githubusercontent.com/oobook/gat/main/install.sh | sudo bash -s v1.0.0
 ```
 
 ## Dependencies
