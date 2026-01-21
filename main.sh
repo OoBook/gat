@@ -6,7 +6,7 @@
 set -e
 
 # gat - A cross-platform bash utility
-VERSION="v${VERSION_TAG:main}"
+GAT_VERSION="{{VERSION_TAG}}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -661,7 +661,7 @@ main() {
                 exit 0
                 ;;
             -v|--version)
-                echo "gat $VERSION"
+                echo "GAT Version: $GAT_VERSION"
                 exit 0
                 ;;
             *)
